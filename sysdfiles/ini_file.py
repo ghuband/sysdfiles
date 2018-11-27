@@ -24,7 +24,7 @@ class IniFile:
     MILLION = THOUSAND * 1000
     BILLION = MILLION * 1000
 
-    # self.properties = [IniProperty]
+    # self.properties = {name:IniProperty}
     # self.file_name = str
     # self.lines = [IniLine]
     # self.sections = [(IniLine, [IniLine])]
@@ -73,10 +73,10 @@ class IniFile:
                     return self.get_bool(prop.section_name, prop.option_name)
                 if prop.type == 'l':
                     return self.get_list(prop.section_name, prop.option_name)
-                if prop.type == 'nb':
-                    return self.get_nb(prop.section_name, prop.option_name)
                 if prop.type == 'ns':
                     return self.get_sec(prop.section_name, prop.option_name)
+                if prop.type == 'nb':
+                    return self.get_nb(prop.section_name, prop.option_name)
                 if prop.type == 'bps':
                     return self.get_bps(prop.section_name, prop.option_name)
                 return self.get_str(prop.section_name, prop.option_name)
@@ -532,23 +532,23 @@ class IniFile:
     # nb_to_str
     # ==============================================================================
     @staticmethod
-    def nb_to_str(num_bytes):
-        if not isinstance(num_bytes, int):
+    def nb_to_str(nb):
+        if not isinstance(nb, int):
             return None
-        s = str(num_bytes)
-        n = num_bytes % IniFile.GIGABYTE
+        s = str(nb)
+        n = nb % IniFile.GIGABYTE
         if n == 0:
-            n = num_bytes // IniFile.GIGABYTE
+            n = nb // IniFile.GIGABYTE
             s = str(n) + 'G'
         else:
-            n = num_bytes % IniFile.MEGABYTE
+            n = nb % IniFile.MEGABYTE
             if n == 0:
-                n = num_bytes // IniFile.MEGABYTE
+                n = nb // IniFile.MEGABYTE
                 s = str(n) + 'M'
             else:
-                n = num_bytes % IniFile.KILOBYTE
+                n = nb % IniFile.KILOBYTE
                 if n == 0:
-                    n = num_bytes // IniFile.KILOBYTE
+                    n = nb // IniFile.KILOBYTE
                     s = str(n) + 'K'
         return s
 
