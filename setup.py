@@ -1,23 +1,17 @@
-#!/usr/bin/env python3
-# encoding: utf-8
-
 from setuptools import setup
 from codecs import open
-from os import path
 
 # get the long description from the README file
-# here = path.abspath(path.dirname(__file__))
-# with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
-#     long_description = f.read()
-with open('README.rst', 'r') as f:
+with open('README.md', 'r') as f:
     long_description = f.read()
 
 setup(
     name='sysdfiles',
     version='0.1.0',
     license='MIT',
-    description='systemd configuration file I/O',
+    description='systemd configuration file access',
     long_description=long_description,
+    long_description_content_type='text/markdown',
     author='Shawn Baker',
     author_email='shawn@frozen.ca',
     url='https://github.com/ShawnBaker/sysdfiles',
@@ -30,6 +24,10 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
     ],
-    keywords='systemd configuration files network_file',
+    project_urls={
+        'Documentation': 'https://github.com/ShawnBaker/sysdfiles/wiki',
+        'Source': 'https://github.com/ShawnBaker/sysdfiles',
+    },
+    keywords='systemd configuration file files automount hosts ini link mount network path scope service slice socket swap timer unit',
     test_suite = 'nose.collector'
 )
