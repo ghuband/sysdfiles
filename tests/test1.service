@@ -1,0 +1,11 @@
+[Unit]
+After=network.target
+
+[Service]
+WorkingDirectory=/path/to/script
+Type=forking
+ExecStart=/bin/bash script.sh
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
