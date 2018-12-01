@@ -28,6 +28,6 @@ setup(
         'Documentation': 'https://github.com/ShawnBaker/sysdfiles/wiki',
         'Source': 'https://github.com/ShawnBaker/sysdfiles',
     },
-    keywords='systemd configuration file files automount hosts ini link mount network path scope service slice socket swap timer unit',
+    keywords='systemd configuration file files automount hosts ini config device link mount network path scope service slice socket swap target timer unit',
     test_suite = 'nose.collector'
 )
