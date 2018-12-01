@@ -14,6 +14,8 @@ https://github.com/ShawnBaker/sysdfiles/wiki
 ## Classes
 
 - AutomountFile
+- ConfigFile
+- DeviceFile
 - HostsFile, HostsLine
 - IniFile, IniLine, IniProperty
 - LinkFile
@@ -25,6 +27,7 @@ https://github.com/ShawnBaker/sysdfiles/wiki
 - SliceFile
 - SocketFile
 - SwapFile
+- TargetFile
 - TimerFile
 - UnitFile
 
