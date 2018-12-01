@@ -6,7 +6,7 @@ from .ini_file import IniFile
 # =============================================================================
 class NetworkFile(IniFile):
 
-    def __init__(self, file_name):
+    def __init__(self, file_name=''):
         IniFile.__init__(self, file_name)
         self.add_properties('match',
                             [['architecture'],
@@ -29,7 +29,7 @@ class NetworkFile(IniFile):
                              ['unmanaged', 'b']])
         self.add_properties('network',
                             [['active_slave', 'b'],
-                             ['address', 'l', ' ', 3],
+                             ['address', 'l', ' ', 1],
                              ['bind_carrier', 'l'],
                              ['bond'],
                              ['bridge'],
@@ -37,14 +37,13 @@ class NetworkFile(IniFile):
                              ['description'],
                              ['dhcp'],
                              ['dhcp_server', 'b'],
-                             ['emit_lldp'],
                              ['dns', 'l', ' ', 1],
                              ['dns_over_tls'],
                              ['dnssec'],
                              ['dnssec_negative_trust_anchors', 'l'],
                              ['domains', 'l'],
+                             ['emit_lldp'],
                              ['gateway', 'l', ' ', 1],
-                             ['link_local_addressing'],
                              ['ip_forward'],
                              ['ip_masquerade', 'b'],
                              ['ipv4_ll_route', 'b'],
@@ -52,36 +51,37 @@ class NetworkFile(IniFile):
                              ['ipv6_accept_ra', 'b'],
                              ['ipv6_duplicate_address_detection'],
                              ['ipv6_hop_limit', 'i'],
-                             ['ipv6_mtu', 'nb'],
+                             ['ipv6_mtu_bytes', 'nb'],
                              ['ipv6_prefix_delegation'],
                              ['ipv6_privacy_extensions'],
                              ['ipv6_proxy_ndp', 'b'],
                              ['ipv6_proxy_ndp_address'],
                              ['ipv6_token'],
+                             ['link_local_addressing'],
                              ['lldp'],
                              ['llmnr'],
-                             ['mac_vlan', 'l'],
+                             ['mac_vlan', 'l', ' ', 1],
                              ['multicast_dns'],
-                             ['ntp', 'l'],
+                             ['ntp', 'l', ' ', 1],
                              ['primary_slave', 'b'],
-                             ['tunnel', 'l'],
-                             ['vlan', 'l'],
+                             ['tunnel', 'l', ' ', 1],
+                             ['vlan', 'l', ' ', 1],
                              ['vrf'],
-                             ['vxlan', 'l']])
+                             ['vxlan', 'l', ' ', 1]])
         self.add_properties('address',
                             [['auto_join', 'b'],
-                             ['address'],
+                             ['address', 'l', ' ', 1],
                              ['broadcast'],
                              ['duplicate_address_detection', 'b'],
                              ['home_address', 'b'],
                              ['label'],
                              ['manage_temporary_address', 'b'],
-                             ['peer'],
+                             ['peer', 'l', ' ', 1],
                              ['preferred_lifetime'],
                              ['prefix_route', 'b'],
                              ['scope']])
         self.add_properties('ipv6_address_label',
-                            [['label'],
+                            [['label', 'i'],
                              ['prefix']])
         self.add_properties('routing_policy_rule',
                             [['firewall_mark', 'i'],
@@ -95,14 +95,14 @@ class NetworkFile(IniFile):
         self.add_properties('route',
                             [['destination'],
                              ['gateway', 'l', ' ', 1],
-                             ['gateway_onlink', 'b'],
-                             ['initial_advertised_receive_window', 'i'],
-                             ['initial_congestion_window', 'i'],
+                             ['gateway_on_link', 'b'],
+                             ['initial_advertised_receive_window', 'nb'],
+                             ['initial_congestion_window', 'nb'],
                              ['ipv6_preference'],
                              ['metric', 'i'],
-                             ['mtu', 'nb'],
+                             ['mtu_bytes', 'nb'],
                              ['preferred_source'],
-                             ['protocol', 'i'],
+                             ['protocol'],
                              ['quick_ack', 'b'],
                              ['scope'],
                              ['source'],
@@ -110,7 +110,7 @@ class NetworkFile(IniFile):
                              ['type']])
         self.add_properties('dhcp',
                             [['anonymize', 'b'],
-                             ['client_id'],
+                             ['client_identifier'],
                              ['critical_connection', 'b'],
                              ['duid_raw_data'],
                              ['duid_type'],
@@ -130,7 +130,7 @@ class NetworkFile(IniFile):
                              ['use_routes', 'b'],
                              ['use_timezone', 'b'],
                              ['user_class', 'l'],
-                             ['vendor_class_id']])
+                             ['vendor_class_identifier']])
         self.add_properties('ipv6_accept_ra',
                             [['route_table', 'i'],
                              ['use_domains'],
@@ -155,7 +155,7 @@ class NetworkFile(IniFile):
                              ['dns_lifetime_sec', 'ns'],
                              ['domains', 'l'],
                              ['managed', 'b'],
-                             ['other_info', 'b'],
+                             ['other_information', 'b'],
                              ['router_lifetime_sec', 'ns'],
                              ['router_preference']])
         self.add_properties('ipv6_prefix',
@@ -173,13 +173,13 @@ class NetworkFile(IniFile):
                              ['unicast_flood', 'b'],
                              ['use_bpdu', 'b']])
         self.add_properties('bridge_fdb',
-                            [['mac_address', 'l'],
+                            [['mac_address'],
                              ['vlan_id']])
         self.add_properties('can',
                             [['bit_rate', 'bps'],
-                             ['sample_point'],
-                             ['restart_sec', 'ns']])
+                             ['restart_sec', 'ns'],
+                             ['sample_point']])
         self.add_properties('bridge_vlan',
-                            [['vlan'],
-                             ['egress_untagged'],
-                             ['pv_id']])
+                            [['egress_untagged'],
+                             ['pv_id'],
+                             ['vlan']])

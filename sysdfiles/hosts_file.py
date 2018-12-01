@@ -21,9 +21,11 @@ class HostsFile:
         if line.address == '' and len(line.comments) == 0:
             self.lines.remove(line)
 
-    def save(self, file_name=None):
-        if file_name is None:
+    def save(self, file_name=''):
+        if file_name == '':
             file_name = self.file_name
+        else:
+            self.file_name = file_name
         with open(file_name, 'w') as f:
             for line in self.lines:
                 for comment in line.comments:

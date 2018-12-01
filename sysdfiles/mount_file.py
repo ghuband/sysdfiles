@@ -6,13 +6,13 @@ from .unit_file import UnitFile
 # =============================================================================
 class MountFile(UnitFile):
 
-    def __init__(self, file_name):
+    def __init__(self, file_name=''):
         UnitFile.__init__(self, file_name)
         self.add_properties('mount',
                             [['directory_mode'],
                              ['force_unmount', 'b'],
                              ['lazy_unmount', 'b'],
-                             ['options', 'l'],
+                             ['options', 'l', ','],
                              ['sloppy_options', 'b'],
                              ['timeout_sec', 'ns'],
                              ['type'],

@@ -6,16 +6,16 @@ from .unit_file import UnitFile
 # =============================================================================
 class ServiceFile(UnitFile):
 
-    def __init__(self, file_name):
+    def __init__(self, file_name=''):
         UnitFile.__init__(self, file_name)
         self.add_properties('service',
                             [['bus_name'],
-                             ['exec_reload', 'l'],
-                             ['exec_start', 'l'],
-                             ['exec_start_post', 'l'],
-                             ['exec_start_pre', 'l'],
-                             ['exec_stop', 'l'],
-                             ['exec_stop_post', 'l'],
+                             ['exec_reload', 'l', '', 1],
+                             ['exec_start', 'l', '', 1],
+                             ['exec_start_post', 'l', '', 1],
+                             ['exec_start_pre', 'l', '', 1],
+                             ['exec_stop', 'l', '', 1],
+                             ['exec_stop_post', 'l', '', 1],
                              ['file_descriptor_store_max', 'i'],
                              ['guess_main_pid', 'b'],
                              ['non_blocking', 'b'],
@@ -29,7 +29,7 @@ class ServiceFile(UnitFile):
                              ['restart_sec', 'ns'],
                              ['root_directory_start_only', 'b'],
                              ['runtime_max_sec', 'ns'],
-                             ['sockets', 'l'],
+                             ['sockets', 'l', ' ', 3],
                              ['success_exit_status', 'l'],
                              ['timeout_sec', 'ns'],
                              ['timeout_start_sec', 'ns'],

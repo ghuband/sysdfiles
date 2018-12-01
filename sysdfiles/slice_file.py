@@ -6,6 +6,6 @@ from .unit_file import UnitFile
 # =============================================================================
 class SliceFile(UnitFile):
 
-    def __init__(self, file_name):
+    def __init__(self, file_name=''):
         UnitFile.__init__(self, file_name)
         self.add_resource_control_properties()

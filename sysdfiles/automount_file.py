@@ -6,7 +6,7 @@ from .unit_file import UnitFile
 # =============================================================================
 class AutomountFile(UnitFile):
 
-    def __init__(self, file_name):
+    def __init__(self, file_name=''):
         UnitFile.__init__(self, file_name)
         self.add_properties('automount',
                             [['directory_mode'],

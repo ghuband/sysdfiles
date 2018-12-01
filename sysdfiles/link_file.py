@@ -6,7 +6,7 @@ from .ini_file import IniFile
 # =============================================================================
 class LinkFile(IniFile):
 
-    def __init__(self, file_name):
+    def __init__(self, file_name=''):
         IniFile.__init__(self, file_name)
         self.add_properties('match',
                             [['architecture'],
@@ -30,8 +30,8 @@ class LinkFile(IniFile):
                              ['generic_segmentation_offload', 'b'],
                              ['large_receive_offload', 'b'],
                              ['mac_address'],
-                             ['mac_policy'],
-                             ['mtu', 'nb'],
+                             ['mac_address_policy'],
+                             ['mtu_bytes', 'nb'],
                              ['name'],
                              ['name_policy', 'l'],
                              ['other_channels', 'i'],
