@@ -6,7 +6,7 @@ import re
 # =============================================================================
 class IniFile:
 
-    SECONDS_INFINITE = -1
+    SECONDS_INFINITY = -1
     SECONDS_PER_MINUTE = 60
     SECONDS_PER_HOUR = SECONDS_PER_MINUTE * 60
     SECONDS_PER_DAY = SECONDS_PER_HOUR * 24
@@ -20,45 +20,66 @@ class IniFile:
     KILOBYTE = 1024
     MEGABYTE = KILOBYTE * 1024
     GIGABYTE = MEGABYTE * 1024
+    TERABYTE = GIGABYTE * 1024
+    PETABYTE = TERABYTE * 1024
+    EXABYTE = PETABYTE * 1024
     THOUSAND = 1000
     MILLION = THOUSAND * 1000
     BILLION = MILLION * 1000
 
-    # self.properties = {name:IniProperty}
     # self.file_name = str
+    # self.properties = {name:IniProperty}
     # self.lines = [IniLine]
     # self.sections = [(IniLine, [IniLine])]
 
     # =========================================================================
     # __init__
     # =========================================================================
-    def __init__(self, file_name):
+    def __init__(self, file_name=''):
         self.properties = {}
         self.file_name = file_name
-        line = IniLine()
-        self.lines = [line]
+        self.lines = []
         self.sections = []
         options = None
-        lines = open(file_name, 'r').read().splitlines()
-        for full_line in lines:
-            line.add_line(full_line)
-            if line.name != '':
-                if line.is_section:
-                    options = []
-                    self.sections.append((line, options))
-                elif options is not None:
-                    i, existing = IniFile.find_option(options, line.name)
-                    if existing is not None:
-                        if isinstance(existing, list):
-                            existing.append(line)
-                        else:
-                            options[i] = [existing, line]
+        if file_name:
+            line = IniLine()
+            self.lines.append(line)
+            lines = open(file_name, 'r').read().splitlines()
+            continue_line = ''
+            for full_line in lines:
+                full_line = continue_line + full_line.strip()
+                if full_line != '' and full_line[-1] == '\\':
+                    continue_line = full_line[:-1]
+                    continue
+                else:
+                    continue_line = ''
+                line, options = self._process_line(line, full_line, options)
+            if continue_line != '':
+                line, options = self._process_line(line, continue_line, options)
+            if line.name == '' and len(line.comments) == 0:
+                self.lines.remove(line)
+
+    # =========================================================================
+    # _process_line
+    # =========================================================================
+    def _process_line(self, line, full_line, options):
+        line.add_line(full_line)
+        if line.name != '':
+            if line.is_section:
+                options = []
+                self.sections.append((line, options))
+            elif options is not None:
+                i, existing = IniFile.find_option(options, line.name)
+                if existing is not None:
+                    if isinstance(existing, list):
+                        existing.append(line)
                     else:
-                        options.append(line)
-                line = IniLine()
-                self.lines.append(line)
-        if line.name == '' and len(line.comments) == 0:
-            self.lines.remove(line)
+                        options[i] = [existing, line]
+                else:
+                    options.append(line)
+            line = IniLine()
+            self.lines.append(line)
+        return line, options
 
     # =========================================================================
     # __getattr__
@@ -72,9 +93,9 @@ class IniFile:
                 if prop.type == 'b':
                     return self.get_bool(prop.section_name, prop.option_name)
                 if prop.type == 'l':
-                    return self.get_list(prop.section_name, prop.option_name)
+                    return self.get_list(prop.section_name, prop.option_name, prop.separator)
                 if prop.type == 'ns':
-                    return self.get_sec(prop.section_name, prop.option_name)
+                    return self.get_sec(prop.section_name, prop.option_name, prop.max_per_line)
                 if prop.type == 'nb':
                     return self.get_nb(prop.section_name, prop.option_name)
                 if prop.type == 'bps':
@@ -94,7 +115,7 @@ class IniFile:
                     self.set_bool(prop.section_name, prop.option_name, value)
                 elif prop.type == 'l':
                     self.set_list(prop.section_name, prop.option_name, value,
-                                  separator=prop.separator, max_per_line=prop.max_per_line)
+                                  prop.separator, prop.max_per_line)
                 elif prop.type == 'ns':
                     self.set_sec(prop.section_name, prop.option_name, value)
                 elif prop.type == 'nb':
@@ -109,15 +130,21 @@ class IniFile:
     # =========================================================================
     # save
     # =========================================================================
-    def save(self, file_name=None):
-        if file_name is None:
+    def save(self, file_name=''):
+        if file_name == '':
             file_name = self.file_name
+        else:
+            self.file_name = file_name
         with open(file_name, 'w') as f:
+            first = True
             for line in self.lines:
                 for comment in line.comments:
                     f.write(comment + '\n')
+                if not first and line.is_section and (len(line.comments) == 0 or line.comments[0].strip() != ''):
+                    f.write('\n')
                 if len(line.name) > 0:
                     f.write('{0!r}\n'.format(line))
+                first = False
 
     # =========================================================================
     # print
@@ -135,11 +162,11 @@ class IniFile:
     def add_properties(self, section_name, properties):
         property_section = section_name.lower()
         parts = section_name.split('_')
-        section_name = ''.join(parts)
+        section_name = ''.join(part.title() for part in parts)
         for prop in properties:
             property_name = prop[0]
             parts = property_name.split('_')
-            option_name = ''.join(parts)
+            option_name = ''.join(part.title() for part in parts)
             property_name = property_section + '_' + property_name
             option_type = prop[1] if len(prop) > 1 else 's'
             ini_prop = IniProperty(section_name, option_name, option_type)
@@ -170,7 +197,6 @@ class IniFile:
             if section_name[0] != '[':
                 section_name = '[' + section_name + ']'
             section = IniLine()
-            section.add_line('')
             section.add_line(section_name)
             section.is_section = True
             options = []
@@ -321,8 +347,11 @@ class IniFile:
             return None
         values = []
         for option in options:
-            parts = option.value.split(separator)
-            values.extend(parts)
+            if separator:
+                parts = option.value.split(separator)
+                values.extend(parts)
+            else:
+                values.append(option.value)
         return values
 
     # =========================================================================
@@ -335,11 +364,16 @@ class IniFile:
             values = []
             if isinstance(value, list):
                 for v in value:
-                    parts = str(v).split(separator)
-                    values.extend(parts)
-            else:
+                    if separator:
+                        parts = str(v).split(separator)
+                        values.extend(parts)
+                    else:
+                        values.append(v)
+            elif separator:
                 parts = str(value).split(separator)
                 values.extend(parts)
+            else:
+                values.append(value)
             line_values = []
             if max_per_line <= 0:
                 max_per_line = len(values)
@@ -353,9 +387,9 @@ class IniFile:
     # ==============================================================================
     # get_sec
     # ==============================================================================
-    def get_sec(self, section_name, option_name):
+    def get_sec(self, section_name, option_name, default_time_unit=1):
         s = self.get_str(section_name, option_name)
-        return IniFile.str_to_sec(s)
+        return IniFile.str_to_sec(s, default_time_unit)
 
     # ==============================================================================
     # set_sec
@@ -416,11 +450,13 @@ class IniFile:
     # str_to_sec
     # ==============================================================================
     @staticmethod
-    def str_to_sec(time_span):
+    def str_to_sec(time_span, default_time_unit=1):
         if time_span is None:
             return None
-        if time_span == 'infinite':
-            return IniFile.SECONDS_INFINITE
+        if time_span == 'infinity':
+            return IniFile.SECONDS_INFINITY
+        if default_time_unit <= 0:
+            default_time_unit = 1
         seconds = 0
         part_seconds = 0
         parts = re.findall('\d+|\D+', time_span)
@@ -429,32 +465,33 @@ class IniFile:
             if part == '':
                 continue
             if part.isdigit():
-                seconds += part_seconds
+                seconds += part_seconds * default_time_unit
                 part_seconds = int(part)
             else:
+                time_unit = default_time_unit
                 if part == 'years' or part == 'year' or part == 'y':
-                    part_seconds *= IniFile.SECONDS_PER_YEAR
+                    time_unit = IniFile.SECONDS_PER_YEAR
                 elif part == 'months' or part == 'month' or part == 'M':
-                    part_seconds *= IniFile.SECONDS_PER_MONTH
+                    time_unit = IniFile.SECONDS_PER_MONTH
                 elif part == 'weeks' or part == 'week' or part == 'w':
-                    part_seconds *= IniFile.SECONDS_PER_WEEK
+                    time_unit = IniFile.SECONDS_PER_WEEK
                 elif part == 'days' or part == 'day' or part == 'd':
-                    part_seconds *= IniFile.SECONDS_PER_DAY
+                    time_unit = IniFile.SECONDS_PER_DAY
                 elif part == 'hours' or part == 'hour' or part == 'hr' or part == 'h':
-                    part_seconds *= IniFile.SECONDS_PER_HOUR
+                    time_unit = IniFile.SECONDS_PER_HOUR
                 elif part == 'minutes' or part == 'minute' or part == 'min' or part == 'm':
-                    part_seconds *= IniFile.SECONDS_PER_MINUTE
+                    time_unit = IniFile.SECONDS_PER_MINUTE
                 elif part == 'seconds' or part == 'second' or part == 'sec' or part == 's':
-                    pass
+                    time_unit = 1
                 elif part == 'msec' or part == 'ms':
-                    part_seconds *= IniFile.SECONDS_PER_MS
+                    time_unit = IniFile.SECONDS_PER_MS
                 elif part == 'usec' or part == 'us':
-                    part_seconds *= IniFile.SECONDS_PER_US
+                    time_unit = IniFile.SECONDS_PER_US
                 elif part == 'nsec' or part == 'ns':
-                    part_seconds *= IniFile.SECONDS_PER_NS
-                seconds += part_seconds
+                    time_unit = IniFile.SECONDS_PER_NS
+                seconds += part_seconds * time_unit
                 part_seconds = 0
-        return seconds + part_seconds
+        return seconds + part_seconds * default_time_unit
 
     # ==============================================================================
     # sec_to_str
@@ -464,7 +501,7 @@ class IniFile:
         if seconds is None:
             return None
         if seconds < 0:
-            return 'infinite'
+            return 'infinity'
         s = ''
         n = seconds // IniFile.SECONDS_PER_YEAR
         if n > 0:
@@ -506,6 +543,8 @@ class IniFile:
         if n > 0:
             s += ' ' + str(int(n)) + 'ns'
             seconds -= int(n) * IniFile.SECONDS_PER_NS
+        if s == '':
+            s = '0s'
         return s.lstrip()
 
     # ==============================================================================
@@ -526,6 +565,15 @@ class IniFile:
         elif suffix == 'G':
             mult = IniFile.GIGABYTE
             s = s[:-1]
+        elif suffix == 'T':
+            mult = IniFile.TERABYTE
+            s = s[:-1]
+        elif suffix == 'P':
+            mult = IniFile.PETABYTE
+            s = s[:-1]
+        elif suffix == 'E':
+            mult = IniFile.EXABYTE
+            s = s[:-1]
         return int(s) * mult
 
     # ==============================================================================
@@ -535,22 +583,25 @@ class IniFile:
     def nb_to_str(nb):
         if not isinstance(nb, int):
             return None
-        s = str(nb)
+        n = nb % IniFile.EXABYTE
+        if n == 0:
+            return str(nb // IniFile.EXABYTE) + 'E'
+        n = nb % IniFile.PETABYTE
+        if n == 0:
+            return str(nb // IniFile.PETABYTE) + 'P'
+        n = nb % IniFile.TERABYTE
+        if n == 0:
+            return str(nb // IniFile.TERABYTE) + 'T'
         n = nb % IniFile.GIGABYTE
         if n == 0:
-            n = nb // IniFile.GIGABYTE
-            s = str(n) + 'G'
-        else:
-            n = nb % IniFile.MEGABYTE
-            if n == 0:
-                n = nb // IniFile.MEGABYTE
-                s = str(n) + 'M'
-            else:
-                n = nb % IniFile.KILOBYTE
-                if n == 0:
-                    n = nb // IniFile.KILOBYTE
-                    s = str(n) + 'K'
-        return s
+            return str(nb // IniFile.GIGABYTE) + 'G'
+        n = nb % IniFile.MEGABYTE
+        if n == 0:
+            return str(nb // IniFile.MEGABYTE) + 'M'
+        n = nb % IniFile.KILOBYTE
+        if n == 0:
+            return str(nb // IniFile.KILOBYTE) + 'K'
+        return str(nb)
 
     # ==============================================================================
     # str_to_bps
@@ -579,22 +630,16 @@ class IniFile:
     def bps_to_str(bps):
         if not isinstance(bps, int):
             return None
-        s = str(bps)
         n = bps % IniFile.BILLION
         if n == 0:
-            n = bps // IniFile.BILLION
-            s = str(n) + 'G'
-        else:
-            n = bps % IniFile.MILLION
-            if n == 0:
-                n = bps // IniFile.MILLION
-                s = str(n) + 'M'
-            else:
-                n = bps % IniFile.THOUSAND
-                if n == 0:
-                    n = bps // IniFile.THOUSAND
-                    s = str(n) + 'K'
-        return s
+            return str(bps // IniFile.BILLION) + 'G'
+        n = bps % IniFile.MILLION
+        if n == 0:
+            return str(bps // IniFile.MILLION) + 'M'
+        n = bps % IniFile.THOUSAND
+        if n == 0:
+            return str(bps // IniFile.THOUSAND) + 'K'
+        return str(bps)
 
 
 # =============================================================================
