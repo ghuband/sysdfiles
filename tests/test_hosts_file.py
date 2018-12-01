@@ -9,6 +9,8 @@ class TestHosts:
 
     def setUp(self):
         assert not self.is_setup
+        print('')
+
         self.is_setup = True
         self.test_info = TestInfo()
         self.file_name1 = os.path.join(os.path.dirname(__file__), 'hosts1')
@@ -20,6 +22,7 @@ class TestHosts:
 
     def tearDown(self):
         assert self.is_setup
+        print('')
 
         if self.test_info.num_errors == 1:
             print('1 error')
@@ -29,6 +32,7 @@ class TestHosts:
 
     def test_hosts(self):
         assert self.is_setup
+        print('')
 
         self.test_info.test_number += 1
         i, line = self.hosts.get_line('127.0.0.1')

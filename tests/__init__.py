@@ -209,13 +209,13 @@ def check_list(test_info, value, section_name, option_name, option_value):
 # =============================================================================
 # check_str_to_sec
 # =============================================================================
-def check_str_to_sec(test_info, s, expected_sec, expected_s=''):
+def check_str_to_sec(test_info, s, expected_sec, expected_s='', default_time_unit=1):
     start_num_errors = test_info.num_errors
     test_info.test_number += 1
-    print('{0:d} - check_str_to_sec: {1} {2} {3}'.format(test_info.test_number, s, expected_sec, expected_s))
+    print('{0:d} - check_str_to_sec: {1} {2} {3} {4}'.format(test_info.test_number, s, expected_sec, expected_s, default_time_unit))
     if expected_s == '':
         expected_s = s
-    sec = IniFile.str_to_sec(s)
+    sec = IniFile.str_to_sec(s, default_time_unit)
     if sec != expected_sec:
         test_info.num_errors += 1
         print("ERROR: sec should be '{0}', got '{1}'".format(expected_sec, sec))

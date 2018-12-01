@@ -1,4 +1,4 @@
-from sysdfiles import IniFile, NetworkFile
+from sysdfiles import IniFile, NetworkFile, ServiceFile
 from tests import *
 
 
@@ -11,14 +11,12 @@ class TestIniFile:
     # =========================================================================
     def setUp(self):
         assert not self.is_setup
+        print('')
 
         self.test_info = TestInfo()
         self.ini_file_name1 = os.path.join(os.path.dirname(__file__), 'lan1.network')
         self.ini_file_name2 = os.path.join(os.path.dirname(__file__), 'lan2.network')
         self.ini = IniFile(self.ini_file_name1)
-
-        self.ini.save(file_name=self.ini_file_name2)
-        assert 0 == compare_files(self.test_info, self.ini_file_name1, self.ini_file_name2)
         self.is_setup = True
 
     # =========================================================================
@@ -26,15 +24,8 @@ class TestIniFile:
     # =========================================================================
     def tearDown(self):
         assert self.is_setup
-
-        self.ini.remove_section('Section')
-        section, options = self.ini.get_section('Section')
-        assert 0 == check_section(self.test_info, section, options, None)
-
-        self.ini.save(file_name=self.ini_file_name2)
-        assert 0 == compare_files(self.test_info, self.ini_file_name1, self.ini_file_name2)
-
         print('')
+
         if self.test_info.num_errors == 1:
             print('1 error')
         else:
@@ -42,10 +33,21 @@ class TestIniFile:
         self.is_setup = False
 
     # =========================================================================
-    # test_formatted_data
+    # test_00_files
     # =========================================================================
-    def test_formatted_data(self):
+    def test_00_files(self):
         assert self.is_setup
+        print('')
+
+        self.ini.save(self.ini_file_name2)
+        assert 0 == compare_files(self.test_info, self.ini_file_name1, self.ini_file_name2)
+
+    # =========================================================================
+    # test_05_formatted_data
+    # =========================================================================
+    def test_05_formatted_data(self):
+        assert self.is_setup
+        print('')
 
         assert 0 == check_str_to_sec(self.test_info, '1years', IniFile.SECONDS_PER_YEAR, '1y')
         assert 0 == check_str_to_sec(self.test_info, '1year', IniFile.SECONDS_PER_YEAR, '1y')
@@ -72,19 +74,23 @@ class TestIniFile:
         assert 0 == check_str_to_sec(self.test_info, '1sec', 1, '1s')
         assert 0 == check_str_to_sec(self.test_info, '1s', 1)
         assert 0 == check_str_to_sec(self.test_info, '1', 1, '1s')
+        assert 0 == check_str_to_sec(self.test_info, '0s', 0)
+        assert 0 == check_str_to_sec(self.test_info, '0', 0, '0s')
+        assert 0 == check_str_to_sec(self.test_info, 'infinity', IniFile.SECONDS_INFINITY)
         assert 0 == check_str_to_sec(self.test_info, '1msec', IniFile.SECONDS_PER_MS, '1ms')
         assert 0 == check_str_to_sec(self.test_info, '1ms', IniFile.SECONDS_PER_MS)
         assert 0 == check_str_to_sec(self.test_info, '1usec', IniFile.SECONDS_PER_US, '1us')
         assert 0 == check_str_to_sec(self.test_info, '1us', IniFile.SECONDS_PER_US)
         assert 0 == check_str_to_sec(self.test_info, '1nsec', IniFile.SECONDS_PER_NS, '1ns')
         assert 0 == check_str_to_sec(self.test_info, '1ns', IniFile.SECONDS_PER_NS)
+        assert 0 == check_str_to_sec(self.test_info, '1', IniFile.SECONDS_PER_NS, '1ns', IniFile.SECONDS_PER_NS)
         assert 0 == check_str_to_sec(self.test_info, '1d24h1440m86401s', IniFile.SECONDS_PER_DAY * 4 + 1, '4d 1s')
         sec = IniFile.SECONDS_PER_WEEK + IniFile.SECONDS_PER_DAY + IniFile.SECONDS_PER_HOUR +\
               IniFile.SECONDS_PER_MINUTE + 1
         assert 0 == check_str_to_sec(self.test_info, '1w 1d 1h 1m 1s', sec)
         assert 0 == check_str_to_sec(self.test_info, ' 1 d  1w 1   s  1 m  1h', sec, '1w 1d 1h 1m 1s')
 
-        assert 0 == check_sec_to_str(self.test_info, IniFile.SECONDS_INFINITE, 'infinite')
+        assert 0 == check_sec_to_str(self.test_info, IniFile.SECONDS_INFINITY, 'infinity')
         assert 0 == check_sec_to_str(self.test_info, 1, '1s')
         assert 0 == check_sec_to_str(self.test_info, IniFile.SECONDS_PER_YEAR, '1y')
         assert 0 == check_sec_to_str(self.test_info, IniFile.SECONDS_PER_MONTH, '1M')
@@ -105,12 +111,18 @@ class TestIniFile:
         assert 0 == check_str_to_nb(self.test_info, str(IniFile.MEGABYTE), IniFile.MEGABYTE, '1M')
         assert 0 == check_str_to_nb(self.test_info, '1G', IniFile.GIGABYTE)
         assert 0 == check_str_to_nb(self.test_info, str(IniFile.GIGABYTE), IniFile.GIGABYTE, '1G')
+        assert 0 == check_str_to_nb(self.test_info, '1T', IniFile.TERABYTE)
+        assert 0 == check_str_to_nb(self.test_info, str(IniFile.TERABYTE), IniFile.TERABYTE, '1T')
+        assert 0 == check_str_to_nb(self.test_info, '1P', IniFile.PETABYTE)
+        assert 0 == check_str_to_nb(self.test_info, str(IniFile.PETABYTE), IniFile.PETABYTE, '1P')
 
         assert 0 == check_nb_to_str(self.test_info, 1, '1')
         assert 0 == check_nb_to_str(self.test_info, IniFile.KILOBYTE + 1, str(IniFile.KILOBYTE + 1))
         assert 0 == check_nb_to_str(self.test_info, IniFile.KILOBYTE, '1K')
         assert 0 == check_nb_to_str(self.test_info, IniFile.MEGABYTE, '1M')
         assert 0 == check_nb_to_str(self.test_info, IniFile.GIGABYTE, '1G')
+        assert 0 == check_nb_to_str(self.test_info, IniFile.TERABYTE, '1T')
+        assert 0 == check_nb_to_str(self.test_info, IniFile.PETABYTE, '1P')
 
         assert 0 == check_str_to_bps(self.test_info, '1', 1)
         assert 0 == check_str_to_bps(self.test_info, '1K', IniFile.THOUSAND)
@@ -127,10 +139,11 @@ class TestIniFile:
         assert 0 == check_bps_to_str(self.test_info, IniFile.BILLION, '1G')
 
     # =========================================================================
-    # test_section
+    # test_10_section
     # =========================================================================
-    def test_section(self):
+    def test_10_section(self):
         assert self.is_setup
+        print('')
 
         section, options = self.ini.get_section('Match')
         assert 0 == check_section(self.test_info, section, options, 'Match')
@@ -155,10 +168,11 @@ class TestIniFile:
         assert 0 == check_section(self.test_info, section, options, None)
 
     # =========================================================================
-    # test_option
+    # test_15_option
     # =========================================================================
-    def test_option(self):
+    def test_15_option(self):
         assert self.is_setup
+        print('')
 
         section, options = self.ini.get_option('Network', 'Address')
         assert 0 == check_option(self.test_info, section, options, 'Network', 'Address', '192.168.0.1/24')
@@ -214,10 +228,11 @@ class TestIniFile:
         assert 0 == check_option(self.test_info, section, options, 'Section', 'Test', value)
 
     # =========================================================================
-    # test_str
+    # test_20_str
     # =========================================================================
-    def test_str(self):
+    def test_20_str(self):
         assert self.is_setup
+        print('')
 
         value = self.ini.get_str('Section', 'TestStr')
         assert 0 == check_str(self.test_info, value, 'Section', 'TestStr', None)
@@ -239,10 +254,11 @@ class TestIniFile:
         assert 0 == check_str(self.test_info, value, 'Section', 'TestStr', None)
 
     # =========================================================================
-    # test_bool
+    # test_25_bool
     # =========================================================================
-    def test_bool(self):
+    def test_25_bool(self):
         assert self.is_setup
+        print('')
 
         value = self.ini.get_bool('Section', 'TestBool')
         assert 0 == check_str(self.test_info, value, 'Section', 'TestBool', None)
@@ -284,10 +300,11 @@ class TestIniFile:
         assert 0 == check_str(self.test_info, value, 'Section', 'TestBool', None)
 
     # =========================================================================
-    # test_int
+    # test_30_int
     # =========================================================================
-    def test_int(self):
+    def test_30_int(self):
         assert self.is_setup
+        print('')
 
         value = self.ini.get_int('Section', 'TestInt')
         assert 0 == check_str(self.test_info, value, 'Section', 'TestInt', None)
@@ -336,10 +353,11 @@ class TestIniFile:
         assert 0 == check_str(self.test_info, value, 'Section', 'TestInt', None)
 
     # =========================================================================
-    # test_list
+    # test_35_list
     # =========================================================================
-    def test_list(self):
+    def test_35_list(self):
         assert self.is_setup
+        print('')
 
         value = self.ini.get_list('Section', 'TestList')
         assert 0 == check_list(self.test_info, value, 'Section', 'TestList', None)
@@ -393,10 +411,11 @@ class TestIniFile:
         assert 0 == check_list(self.test_info, value, 'Section', 'TestList', None)
 
     # =========================================================================
-    # test_sec
+    # test_40_sec
     # =========================================================================
-    def test_sec(self):
+    def test_40_sec(self):
         assert self.is_setup
+        print('')
 
         value = self.ini.get_sec('Section', 'TestSec')
         assert 0 == check_str(self.test_info, value, 'Section', 'TestSec', None)
@@ -420,10 +439,11 @@ class TestIniFile:
         assert 0 == check_str(self.test_info, value, 'Section', 'TestSec', None)
 
     # =========================================================================
-    # test_nb
+    # test_45_nb
     # =========================================================================
-    def test_nb(self):
+    def test_45_nb(self):
         assert self.is_setup
+        print('')
 
         value = self.ini.get_nb('Section', 'TestNumBytes')
         assert 0 == check_str(self.test_info, value, 'Section', 'TestNumBytes', None)
@@ -447,10 +467,11 @@ class TestIniFile:
         assert 0 == check_str(self.test_info, value, 'Section', 'TestNumBytes', None)
 
     # =========================================================================
-    # test_bps
+    # test_50_bps
     # =========================================================================
-    def test_bps(self):
+    def test_50_bps(self):
         assert self.is_setup
+        print('')
 
         value = self.ini.get_bps('Section', 'TestBytesPerSecond')
         assert 0 == check_str(self.test_info, value, 'Section', 'TestBytesPerSecond', None)
@@ -474,10 +495,11 @@ class TestIniFile:
         assert 0 == check_str(self.test_info, value, 'Section', 'TestBytesPerSecond', None)
 
     # =============================================================================
-    # test_property
+    # test_55_property
     # =============================================================================
-    def test_property(self):
+    def test_55_property(self):
         assert self.is_setup
+        print('')
 
         network = NetworkFile(self.ini_file_name1)
         assert 0 == check_str(self.test_info, network.match_mac_address[0], 'Match', 'MACAddress', '11:22:33:44:55:66')
@@ -488,3 +510,46 @@ class TestIniFile:
         assert 0 == check_str(self.test_info, network.network_dns[0], 'Network', 'DNS', '8.8.8.8')
         assert 0 == check_str(self.test_info, network.network_dns[1], 'Network', 'DNS', '8.8.4.4')
         assert 0 == check_str(self.test_info, network.network_domains[0], 'Network', 'Domains', 'home.net')
+
+        service_file_name = os.path.join(os.path.dirname(__file__), 'test1.service')
+        service = ServiceFile(service_file_name)
+        assert 0 == check_str(self.test_info, service.unit_after[0], 'Unit', 'After', 'network.target')
+        assert 0 == check_str(self.test_info, service.install_wanted_by[0], 'Install', 'WantedBy', 'multi-user.target')
+        assert 0 == check_str(self.test_info, service.service_kill_mode, 'Service', 'KillMode', 'process')
+
+    # =============================================================================
+    # test_99_last
+    # =============================================================================
+    def test_99_last(self):
+        assert self.is_setup
+        print('')
+
+        self.ini.remove_section('Section')
+        section, options = self.ini.get_section('Section')
+        assert 0 == check_section(self.test_info, section, options, None)
+
+        self.ini.save(self.ini_file_name2)
+        assert 0 == compare_files(self.test_info, self.ini_file_name1, self.ini_file_name2)
+
+        service_file_name1 = os.path.join(os.path.dirname(__file__), 'test1.service')
+        service_file_name2 = os.path.join(os.path.dirname(__file__), 'test2.service')
+        service1 = ServiceFile(service_file_name1)
+        service2 = ServiceFile()
+        service2.unit_after = service1.unit_after
+        service2.service_after = service1.service_after
+        service2.service_working_directory = service1.service_working_directory
+        service2.service_type = service1.service_type
+        service2.service_exec_start = service1.service_exec_start
+        service2.service_kill_mode = service1.service_kill_mode
+        service2.install_wanted_by = service1.install_wanted_by
+        service2.save(service_file_name2)
+        assert 0 == compare_files(self.test_info, service_file_name1, service_file_name2)
+
+        file_name1 = os.path.join(os.path.dirname(__file__), 'test1.ini')
+        ini2 = IniFile(file_name1)
+        value = ini2.get_str('Section', 'Option1')
+        assert 0 == check_str(self.test_info, value, 'Section', 'Option1', 'onetwothree')
+        value = ini2.get_str('Section', 'Option2')
+        assert 0 == check_str(self.test_info, value, 'Section', 'Option2', 'one two three')
+        value = ini2.get_str('Section', 'Option3')
+        assert 0 == check_str(self.test_info, value, 'Section', 'Option3', 'onetwothree')
