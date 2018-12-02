@@ -55,7 +55,7 @@ class NetworkFile(IniFile):
                              ['ipv6_prefix_delegation'],
                              ['ipv6_privacy_extensions'],
                              ['ipv6_proxy_ndp', 'b'],
-                             ['ipv6_proxy_ndp_address'],
+                             ['ipv6_proxy_ndp_address', 'l', ' ', 1],
                              ['ipv6_token'],
                              ['link_local_addressing'],
                              ['lldp'],

@@ -12,7 +12,7 @@ class TimerFile(UnitFile):
                             [['accuracy_sec', 'ns'],
                              ['on_active_sec', 'ns'],
                              ['on_boot_sec', 'ns'],
-                             ['on_calendar', 'l'],
+                             ['on_calendar', 'l', '', 1],
                              ['on_startup_sec', 'ns'],
                              ['on_unit_active_sec', 'ns'],
                              ['on_unit_inactive_sec', 'ns'],
