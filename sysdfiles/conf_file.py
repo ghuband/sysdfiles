@@ -2,9 +2,9 @@ from .ini_file import IniFile
 
 
 # =============================================================================
-# ConfigFile
+# ConfFile
 # =============================================================================
-class ConfigFile(IniFile):
+class ConfFile(IniFile):
 
     def __init__(self, file_name=''):
         IniFile.__init__(self, file_name)

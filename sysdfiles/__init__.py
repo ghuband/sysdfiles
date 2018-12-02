@@ -1,5 +1,5 @@
 from .automount_file import AutomountFile
-from .config_file import ConfigFile
+from .conf_file import ConfFile
 from .device_file import DeviceFile
 from .hosts_file import HOSTS_FILE, HostsFile, HostsLine
 from .ini_file import IniFile, IniLine, IniProperty
