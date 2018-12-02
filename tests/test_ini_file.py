@@ -138,6 +138,9 @@ class TestIniFile:
         assert 0 == check_bps_to_str(self.test_info, IniFile.MILLION, '1M')
         assert 0 == check_bps_to_str(self.test_info, IniFile.BILLION, '1G')
 
+        assert 0 == check_str_to_fm(self.test_info, '0755', 0o755)
+        assert 0 == check_fm_to_str(self.test_info, 0o755, '0755')
+
     # =========================================================================
     # test_10_section
     # =========================================================================

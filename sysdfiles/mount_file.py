@@ -9,7 +9,7 @@ class MountFile(UnitFile):
     def __init__(self, file_name=''):
         UnitFile.__init__(self, file_name)
         self.add_properties('mount',
-                            [['directory_mode'],
+                            [['directory_mode', 'fm'],
                              ['force_unmount', 'b'],
                              ['lazy_unmount', 'b'],
                              ['options', 'l', ','],

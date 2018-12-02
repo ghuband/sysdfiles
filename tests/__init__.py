@@ -318,3 +318,41 @@ def check_bps_to_str(test_info, bps, expected_s):
         test_info.num_errors += 1
         print("ERROR: new bps should be '{0}', got '{1}'".format(bps, new_bps))
     return test_info.num_errors - start_num_errors
+
+
+# =============================================================================
+# check_str_to_fm
+# =============================================================================
+def check_str_to_fm(test_info, s, expected_fm, expected_s=''):
+    start_num_errors = test_info.num_errors
+    test_info.test_number += 1
+    print('{0:d} - check_str_to_fm: {1} {2} {3}'.format(test_info.test_number, s, expected_fm, expected_s))
+    if expected_s == '':
+        expected_s = s
+    fm = IniFile.str_to_fm(s)
+    if fm != expected_fm:
+        test_info.num_errors += 1
+        print("ERROR: fm should be '{0}', got '{1}'".format(expected_fm, fm))
+    new_s = IniFile.fm_to_str(fm)
+    if new_s != expected_s:
+        test_info.num_errors += 1
+        print("ERROR: new s should be '{0}', got '{1}'".format(expected_s, new_s))
+    return test_info.num_errors - start_num_errors
+
+
+# =============================================================================
+# check_fm_to_str
+# =============================================================================
+def check_fm_to_str(test_info, fm, expected_s):
+    start_num_errors = test_info.num_errors
+    test_info.test_number += 1
+    print('{0:d} - check_fm_to_str: {1} {2}'.format(test_info.test_number, fm, expected_s))
+    s = IniFile.fm_to_str(fm)
+    if s != expected_s:
+        test_info.num_errors += 1
+        print("ERROR: s should be '{0}', got '{1}'".format(expected_s, s))
+    new_fm = IniFile.str_to_fm(s)
+    if new_fm != fm:
+        test_info.num_errors += 1
+        print("ERROR: new fm should be '{0}', got '{1}'".format(fm, new_fm))
+    return test_info.num_errors - start_num_errors

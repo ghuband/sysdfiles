@@ -100,6 +100,8 @@ class IniFile:
                     return self.get_nb(prop.section_name, prop.option_name)
                 if prop.type == 'bps':
                     return self.get_bps(prop.section_name, prop.option_name)
+                if prop.type == 'fm':
+                    return self.get_fm(prop.section_name, prop.option_name)
                 return self.get_str(prop.section_name, prop.option_name)
 
     # =========================================================================
@@ -122,6 +124,8 @@ class IniFile:
                     self.set_nb(prop.section_name, prop.option_name, value)
                 elif prop.type == 'bps':
                     self.set_bps(prop.section_name, prop.option_name, value)
+                elif prop.type == 'fm':
+                    self.set_fm(prop.section_name, prop.option_name, value)
                 else:
                     self.set_str(prop.section_name, prop.option_name, value)
                 return
@@ -435,6 +439,23 @@ class IniFile:
             s = IniFile.bps_to_str(bps)
             self.set_str(section_name, option_name, s)
 
+    # ==============================================================================
+    # get_fm
+    # ==============================================================================
+    def get_fm(self, section_name, option_name):
+        s = self.get_str(section_name, option_name)
+        return IniFile.str_to_fm(s)
+
+    # ==============================================================================
+    # set_fm
+    # ==============================================================================
+    def set_fm(self, section_name, option_name, fm):
+        if fm is None:
+            self.remove_option(section_name, option_name)
+        else:
+            s = IniFile.fm_to_str(fm)
+            self.set_str(section_name, option_name, s)
+
     # =========================================================================
     # find_option
     # =========================================================================
@@ -640,6 +661,25 @@ class IniFile:
         if n == 0:
             return str(bps // IniFile.THOUSAND) + 'K'
         return str(bps)
+
+
+    # ==============================================================================
+    # str_to_fm
+    # ==============================================================================
+    @staticmethod
+    def str_to_fm(s):
+        if not isinstance(s, str):
+            return None
+        return int(s, 8)
+
+    # ==============================================================================
+    # fm_to_str
+    # ==============================================================================
+    @staticmethod
+    def fm_to_str(fm):
+        if not isinstance(fm, int):
+            return None
+        return '{0:04o}'.format(fm)
 
 
 # =============================================================================
