@@ -161,6 +161,38 @@ class IniFile:
                 print('{0!r}'.format(line))
 
     # =========================================================================
+    # print_properties
+    # =========================================================================
+    def print_properties(self, section_name=''):
+        if section_name != '':
+            parts = section_name.lower().split('_')
+            section_name = ''.join(part.title() for part in parts)
+        for name, property in self.properties.items():
+            if section_name == '' or property.section_name == section_name:
+                s = "* {0}".format(name, property.type)
+                t = ''
+                if property.type == 'i':
+                    t = 'int'
+                elif property.type == 'b':
+                    t = 'bool'
+                elif property.type == 'l':
+                    t = 'list'
+                elif property.type == 'ns':
+                    t = 'seconds'
+                elif property.type == 'nb':
+                    t = 'bytes'
+                elif property.type == 'bps':
+                    t = 'bits'
+                elif property.type == 'fm':
+                    t = 'mode'
+                if t:
+                    s += ' - ' + t
+                if (property.type == 'l' and (property.separator != ' ' or property.max_per_line != 0))\
+                    or (property.type == 'nb' and property.max_per_line != 0):
+                    s += " '{0}' {1}".format(property.separator, property.max_per_line)
+                print(s)
+
+    # =========================================================================
     # add_properties
     # =========================================================================
     def add_properties(self, section_name, properties):
