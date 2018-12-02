@@ -101,7 +101,7 @@ class UnitFile(IniFile):
         if not section_name:
             section_name = type(self).__name__
             if section_name.endswith('File'):
-                section_name = section_name[:-4]
+                section_name = section_name[:-4].lower()
         self.add_properties(section_name,
                             [['ambient_capabilities', 'l', ' ', 3],
                              ['app_armor_profile'],
@@ -214,7 +214,7 @@ class UnitFile(IniFile):
         if not section_name:
             section_name = type(self).__name__
             if section_name.endswith('File'):
-                section_name = section_name[:-4]
+                section_name = section_name[:-4].lower()
         self.add_properties(section_name,
                             [['kill_mode'],
                              ['kill_signal'],
@@ -228,7 +228,7 @@ class UnitFile(IniFile):
         if not section_name:
             section_name = type(self).__name__
             if section_name.endswith('File'):
-                section_name = section_name[:-4]
+                section_name = section_name[:-4].lower()
         self.add_properties(section_name,
                             [['block_io_accounting', 'b'],
                              ['block_io_device_weight', 'l', '', 1],
