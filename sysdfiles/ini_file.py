@@ -196,16 +196,15 @@ class IniFile:
     # add_properties
     # =========================================================================
     def add_properties(self, section_name, properties):
-        property_section = section_name.lower()
         parts = section_name.split('_')
-        section_name = ''.join(part.title() for part in parts)
+        real_section_name = ''.join(part.title() for part in parts)
         for prop in properties:
             property_name = prop[0]
             parts = property_name.split('_')
             option_name = ''.join(part.title() for part in parts)
-            property_name = property_section + '_' + property_name
+            property_name = section_name + '_' + property_name
             option_type = prop[1] if len(prop) > 1 else 's'
-            ini_prop = IniProperty(section_name, option_name, option_type)
+            ini_prop = IniProperty(real_section_name, option_name, option_type)
             if len(prop) > 2:
                 ini_prop.separator = prop[2]
             if len(prop) > 3:
