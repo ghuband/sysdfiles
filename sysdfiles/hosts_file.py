@@ -1,12 +1,12 @@
 import re
 
-HOSTS_FILE = '/etc/hosts'
-
 
 # =============================================================================
 # HostsFile
 # =============================================================================
 class HostsFile:
+
+    HOSTS_FILE = '/etc/hosts'
 
     def __init__(self, file_name=HOSTS_FILE):
         self.file_name = file_name

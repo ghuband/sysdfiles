@@ -1,7 +1,7 @@
 from .automount_file import AutomountFile
 from .conf_file import ConfFile
 from .device_file import DeviceFile
-from .hosts_file import HOSTS_FILE, HostsFile, HostsLine
+from .hosts_file import HostsFile, HostsLine
 from .ini_file import IniFile, IniLine, IniProperty
 from .link_file import LinkFile
 from .mount_file import MountFile
