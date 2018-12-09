@@ -14,8 +14,8 @@ class TestIniFile:
         print('')
 
         self.test_info = TestInfo()
-        self.ini_file_name1 = os.path.join(os.path.dirname(__file__), 'lan1.network')
-        self.ini_file_name2 = os.path.join(os.path.dirname(__file__), 'lan2.network')
+        self.ini_file_name1 = os.path.join(os.path.dirname(__file__), 'test1.network')
+        self.ini_file_name2 = os.path.join(os.path.dirname(__file__), 'test2.network')
         self.ini = IniFile(self.ini_file_name1)
         self.is_setup = True
 
