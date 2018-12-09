@@ -722,37 +722,29 @@ class IniLine:
         self.comments = []
         self.name = ''
         self.value = ''
-        self.comment = ''
         self.is_section = False
 
     def add_line(self, full_line):
-        comment = ''
         line = full_line.strip()
-        i = line.find('#')
-        if i >= 0:
-            comment = line[i:]
-            line = line[:i].rstrip()
-        if len(line) > 0:
+        if line != '' and line[0] != '#' and line[0] != ';':
             if line[0] == '[' and line[-1] == ']':
-                self.name = line[1:-1]
+                self.name = line[1:-1].strip()
                 self.is_section = True
             else:
-                parts = line.split('=')
-                self.name = parts[0].rstrip()
-                if len(parts) > 1:
-                    self.value = '='.join(parts[1:]).lstrip()
-                if len(comment) > 0:
-                    self.comment = comment
+                i = line.find('=')
+                if i != -1:
+                    self.name = line[:i].rstrip()
+                    self.value = line[i+1:].lstrip()
+                else:
+                    self.name = line
         else:
             self.comments.append(full_line)
 
     def __repr__(self):
         if self.is_section:
-            s = '[{0}]'.format(self.name)
+            s = '[' + self.name + ']'
         else:
-            s = '{0}={1}'.format(self.name, self.value)
-        if self.comment != '':
-            s += '   ' + self.comment
+            s = self.name + '=' + self.value
         return s
 
 
