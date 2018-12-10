@@ -102,7 +102,7 @@ class VarsLine:
         self.comments = []
         self.name = ''
         self.value = ''
-        self.allowed = re.compile('^[A-Za-z0-9]*$')
+        self._allowed = re.compile('^[A-Za-z0-9]*$')
 
     def add_line(self, full_line):
         line = full_line.strip()
@@ -120,6 +120,6 @@ class VarsLine:
 
     def __repr__(self):
         value = self.value
-        if not self.allowed.match(value):
+        if not self._allowed.match(value):
             value = '"' + value + '"'
         return self.name + '=' + value
