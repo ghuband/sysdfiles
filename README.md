@@ -10,7 +10,8 @@ pip install sysdfiles
 
 ## Documentation
 
-https://github.com/ShawnBaker/sysdfiles/wiki
+* [Wiki](https://github.com/ShawnBaker/sysdfiles/wiki)
+* [Release Notes](https://github.com/ShawnBaker/sysdfiles/blob/master/release-notes.md)
 
 ## Usage
 
