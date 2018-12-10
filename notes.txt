@@ -13,7 +13,7 @@ do list
 		    properties
 distribution
 	dact
-	rm -rf build dist sysdfiles.egg-info
+	rm -rf build dist sysdfiles.egg-info sysdfiles/__pycache__ tests/__pycache__
 	python3 setup.py sdist bdist_wheel
 	twine upload dist/*
 testing
