@@ -13,16 +13,18 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     author='Shawn Baker',
-    author_email='shawn@frozen.ca',
+    author_email='support@frozen.ca',
     url='https://github.com/ShawnBaker/sysdfiles',
     packages=['sysdfiles'],
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
-        'Topic :: Software Development :: Libraries',
         'License :: OSI Approved :: MIT License',
+        'Operating System :: POSIX :: Linux',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Topic :: System :: Operating System'
     ],
     project_urls={
         'Documentation': 'https://github.com/ShawnBaker/sysdfiles/wiki',
