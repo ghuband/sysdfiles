@@ -2,7 +2,7 @@ from sysdfiles import IniFile, NetworkFile, ServiceFile
 from tests import *
 
 
-class TestIniFile:
+class TestIniFiles:
     def __init__(self):
         self.is_setup = False
 

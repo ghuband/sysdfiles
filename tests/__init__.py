@@ -45,12 +45,12 @@ def compare_files(test_info, file_name1, file_name2):
 
 
 # =============================================================================
-# check_names
+# check_hosts
 # =============================================================================
-def check_names(test_info, hosts, line, host_name, domain_name):
+def check_hosts(test_info, hosts, line, host_name, domain_name):
     start_num_errors = test_info.num_errors
     test_info.test_number += 1
-    print('{0:d} - check_names: {1} {2} {3!r}'.format(test_info.test_number,
+    print('{0:d} - check_hosts: {1} {2} {3!r}'.format(test_info.test_number,
           hosts.host_name, hosts.domain_name, line))
     if hosts.host_name != host_name:
         test_info.num_errors += 1
@@ -62,6 +62,27 @@ def check_names(test_info, hosts, line, host_name, domain_name):
     if line.name != full_name:
         test_info.num_errors += 1
         print("ERROR: line name should be '{0}'".format(full_name))
+    return test_info.num_errors - start_num_errors
+
+
+# =============================================================================
+# check_string
+# =============================================================================
+def check_string(test_info, name, s, should_be):
+    start_num_errors = test_info.num_errors
+    test_info.test_number += 1
+    print('{0:d} - check_string: {1} {2} {3}'.format(test_info.test_number, name, s, should_be))
+    if s is None or s == '':
+        if should_be is not None and should_be != '':
+            test_info.num_errors += 1
+            print("ERROR: {0} should be empty".format(name))
+    else:
+        if should_be is None or should_be == '':
+            test_info.num_errors += 1
+            print("ERROR: {0} should not be empty".format(name))
+        if s != should_be:
+            test_info.num_errors += 1
+            print("ERROR: {0} should be '{1}' instead of '{2}'".format(name, should_be, s))
     return test_info.num_errors - start_num_errors
 
 
@@ -212,7 +233,8 @@ def check_list(test_info, value, section_name, option_name, option_value):
 def check_str_to_sec(test_info, s, expected_sec, expected_s='', default_time_unit=1):
     start_num_errors = test_info.num_errors
     test_info.test_number += 1
-    print('{0:d} - check_str_to_sec: {1} {2} {3} {4}'.format(test_info.test_number, s, expected_sec, expected_s, default_time_unit))
+    print('{0:d} - check_str_to_sec: {1} {2} {3} {4}'.format(test_info.test_number, s, expected_sec,
+                                                             expected_s, default_time_unit))
     if expected_s == '':
         expected_s = s
     sec = IniFile.str_to_sec(s, default_time_unit)

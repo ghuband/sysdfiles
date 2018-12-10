@@ -7,7 +7,7 @@ with open('README.md', 'r') as f:
 
 setup(
     name='sysdfiles',
-    version='0.1.0',
+    version='0.2.0',
     license='MIT',
     description='systemd configuration file access',
     long_description=long_description,
@@ -28,6 +28,6 @@ setup(
         'Documentation': 'https://github.com/ShawnBaker/sysdfiles/wiki',
         'Source': 'https://github.com/ShawnBaker/sysdfiles',
     },
-    keywords='systemd configuration file files automount conf device hosts ini link mount network path scope service slice socket swap target timer unit',
+    keywords='systemd configuration file files automount conf device hostname hosts ini link machine-id machine-info mount network os-release path scope service slice socket swap target timer unit',
     test_suite = 'nose.collector'
 )
