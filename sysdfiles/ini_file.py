@@ -491,11 +491,17 @@ class IniFile:
     # find_option
     # =========================================================================
     @staticmethod
+
     def find_option(options, name):
         name = name.lower()
         for i, line in enumerate(options):
-            if line.name.lower() == name:
-                return i, line
+            if isinstance(line, list):
+                for j, lline in enumerate(line):
+                    if lline.name.lower() == name:
+                        return j, lline
+            else:
+                if line.name.lower() == name:
+                    return i, line
         return -1, None
 
     # ==============================================================================
