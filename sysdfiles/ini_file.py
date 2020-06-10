@@ -1,4 +1,6 @@
+import os
 import re
+import shutil
 
 
 # =============================================================================
@@ -146,7 +148,6 @@ class IniFile:
             self.file_name = file_name
         self._write(file_name)
 
-
     def _write(self, file_name):
         """Write the contents to a file. Overwrites an existing file.
 
@@ -165,15 +166,26 @@ class IniFile:
                 first = False
 
     def backup(self, bak_file=None):
-        """Write the file contents to a <file_name>.bak file.
+        """Write the file contents to a <file_name>.bak or bak_file file.
 
-        :param string file_name: full path and filename.
+        :param string bak_file: full path and filename, default is None.
         """
 
         if not bak_file:
             self._write(self.file_name + ".bak")
         else:
             self._write(bak_file)
+
+    def restore(self, bak_file=None):
+        """Restore the file from <file_name>.bak file or bak_file.
+
+        :param string bak_file: full path and filename, default is None.
+        """
+
+        if not bak_file:
+            bak_file = self.file_name + ".bak"
+        if os.path.isfile(bak_file):
+            shutil.copy(bak_file, self.file_name)
 
 
     # =========================================================================
