@@ -35,16 +35,21 @@ class IniFile:
     # =========================================================================
     # __init__
     # =========================================================================
-    def __init__(self, file_name=''):
+    def __init__(self, file_name=None):
         self.properties = {}
         self.file_name = file_name
         self.lines = []
         self.sections = []
+
+    def read(self):
+        """Parse the ini file.
+        """
+
         options = None
-        if file_name:
+        if self.file_name:
             line = IniLine()
             self.lines.append(line)
-            lines = open(file_name, 'r').read().splitlines()
+            lines = open(self.file_name, 'r').read().splitlines()
             continue_line = ''
             for full_line in lines:
                 full_line = continue_line + full_line.strip()
@@ -134,21 +139,42 @@ class IniFile:
     # =========================================================================
     # save
     # =========================================================================
-    def save(self, file_name=''):
-        if file_name == '':
+    def save(self, file_name=None):
+        if not file_name:
             file_name = self.file_name
         else:
             self.file_name = file_name
+        self._write(file_name)
+
+
+    def _write(self, file_name):
+        """Write the contents to a file. Overwrites an existing file.
+
+        :param string file_name: name of the file to write.
+        """
         with open(file_name, 'w') as f:
             first = True
             for line in self.lines:
                 for comment in line.comments:
                     f.write(comment + '\n')
-                if not first and line.is_section and (len(line.comments) == 0 or line.comments[0].strip() != ''):
+                if not first and line.is_section and \
+                  (len(line.comments) == 0 or line.comments[0].strip() != ''):
                     f.write('\n')
                 if len(line.name) > 0:
                     f.write('{0!r}\n'.format(line))
                 first = False
+
+    def backup(self, bak_file=None):
+        """Write the file contents to a <file_name>.bak file.
+
+        :param string file_name: full path and filename.
+        """
+
+        if not bak_file:
+            self._write(self.file_name + ".bak")
+        else:
+            self._write(bak_file)
+
 
     # =========================================================================
     # print

@@ -3,7 +3,10 @@ from .ini_file import IniFile
 
 # =============================================================================
 # NetDevFile
-# Reference; https://manpages.debian.org/jessie/systemd/systemd.netdev.5.en.html
+# Virtual Network Device Configuration
+# https://www.freedesktop.org/software/systemd/man/systemd.netdev.html
+# NOT ALL SECTIONS ARE INCLUDED
+# NOT ALL OPTIONS IN THE SECTIONS ARE INCLUDED
 # =============================================================================
 class NetDevFile(IniFile):
 
@@ -14,22 +17,44 @@ class NetDevFile(IniFile):
         self.add_properties('match',
                             [['host'],
                              ['virtualization'],
-                             ['kernelcommandline'],
+                             ['kernel_command_line'],
                              ['architecture']
                             ]
                            )
         # NetDev section
-        self.add_properties('netdev',
-                            [['name'],
+        self.add_properties('net_dev',
+                            [['description'],
+                             ['name'],
                              ['kind'],
-                             ['mtubytes'],
-                             ['macaddress']
+                             ['mtu_bytes'],
+                             ['mac_address']
+                            ]
+                           )
+
+        # Bridge section
+        self.add_properties('bridge',
+                            [['hello_time_sec'],
+                             ['max_age_sec'],
+                             ['forward_delay_sec'],
+                             ['ageing_time_sec'],
+                             ['priority'],
+                             ['group_forward_mask'],
+                             ['default_pvid'],
+                             ['multicast_querier', 'b'],
+                             ['multicast_snooping', 'b'],
+                             ['vlan_filtering', 'b'],
+                             ['stp', 'b'],
+                             ['multicast_igmp_version']
                             ]
                            )
 
         # VLAN section
         self.add_properties('vlan',
-                            [['id']
+                            [['id'],
+                             ['gvrp', 'b'],
+                             ['mvrp', 'b'],
+                             ['loose_binding', 'b'],
+                             ['reorder_header', 'b']
                             ]
                            )
 
@@ -45,7 +70,7 @@ class NetDevFile(IniFile):
                              ['group'],
                              ['tos'],
                              ['ttl'],
-                             ['maclearning']
+                             ['mac_learning', 'b']
                             ]
                            )
 
@@ -55,22 +80,22 @@ class NetDevFile(IniFile):
                              ['remote'],
                              ['tos'],
                              ['ttl'],
-                             ['discoverpathmtu']
+                             ['discover_path_mtu', 'b']
                             ]
                            )
 
         # Peer section
         self.add_properties('peer',
                             [['name'],
-                             ['macaddress']
+                             ['mac_address']
                             ]
                            )
 
         # Tun section
         self.add_properties('tun',
-                            [['onequeue'],
-                             ['multiqueue'],
-                             ['packetinfo'],
+                            [['multi_queue', 'b'],
+                             ['packet_info', 'b'],
+                             ['v_net_header', 'b'],
                              ['user'],
                              ['group']
                             ]
@@ -78,10 +103,27 @@ class NetDevFile(IniFile):
 
         # Tap section
         self.add_properties('tap',
-                            [['onequeue'],
-                             ['multiqueue'],
-                             ['packetinfo'],
+                            [['multi_queue', 'b'],
+                             ['packet_info', 'b'],
+                             ['v_net_header', 'b'],
                              ['user'],
                              ['group']
                             ]
                            )
+
+    def create(self,
+               name=None,
+               kind=None
+              ):
+        """Create a netdev file with minimal options.
+
+        :param string name: interface name
+        :param string kind: virtual interface kind (vlan, bridge, etc.)
+        """
+
+        self.add_section("NetDev")
+        if name:
+            self.net_dev_name = name
+        if kind:
+            self.net_dev_kind = kind
+        self.save()
