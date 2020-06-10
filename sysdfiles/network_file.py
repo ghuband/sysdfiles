@@ -183,3 +183,26 @@ class NetworkFile(IniFile):
                             [['egress_untagged'],
                              ['pv_id'],
                              ['vlan']])
+
+    def create(self,
+               name,
+               dhcp="yes",
+               address=None,
+               gateway=None
+              ):
+        """Create a network file with most common options.
+
+        :param string name: interface name, ie "eth0"
+        :param string dhcp: DHCP setting
+        :param string address: IP adddress to assign to the interface
+        :param string gateway: the gateway IP address
+        """
+
+        self.add_section("Match")
+        self.match_name = name
+        self.add_section("Network")
+        self.network_dhcp = dhcp
+        if address:
+            self.network_address = address
+        if gateway:
+            self.network_gateway = gateway
